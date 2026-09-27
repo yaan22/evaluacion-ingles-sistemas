@@ -43,6 +43,8 @@ body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-ser
 .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
 .field input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff}
 .field input:focus{outline:2px solid #f3c9c6;border-color:var(--red)}
+.field input.input-error{border-color:var(--red);background:#fdf1f0}
+.field-error{color:var(--red);font-size:12.5px;margin:6px 0 0}
 .btn-primary{width:100%;background:var(--red);color:#fff;border:0;padding:15px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-primary:hover{background:#c81d15}
 

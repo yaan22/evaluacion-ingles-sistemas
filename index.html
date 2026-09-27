@@ -48,7 +48,8 @@
         </div>
         <div class="field">
           <label>Email</label>
-          <input type="email" id="student_email" placeholder="name@example.com">
+          <input type="email" id="student_email" required placeholder="name@example.com">
+          <p id="emailError" class="field-error hidden">This email has already submitted the evaluation. Only one attempt is allowed.</p>
         </div>
         <div class="field">
           <label>Date</label>
@@ -229,12 +230,43 @@ document.getElementById("nextBtn").addEventListener("click", ()=>{
   else { submitEvaluation(); }
 });
 
+const COMPLETED_KEY = "ee_completed_emails";
+
+function getCompletedEmails(){
+  try{ return JSON.parse(localStorage.getItem(COMPLETED_KEY)) || []; }
+  catch(e){ return []; }
+}
+function markEmailCompleted(email){
+  const list = getCompletedEmails();
+  const norm = email.trim().toLowerCase();
+  if (norm && !list.includes(norm)){
+    list.push(norm);
+    localStorage.setItem(COMPLETED_KEY, JSON.stringify(list));
+  }
+}
+function isEmailCompleted(email){
+  const norm = email.trim().toLowerCase();
+  return norm && getCompletedEmails().includes(norm);
+}
+
+const emailInput = document.getElementById("student_email");
+const emailError = document.getElementById("emailError");
+emailInput.addEventListener("input", ()=>{ emailError.classList.add("hidden"); emailInput.classList.remove("input-error"); });
+
 document.getElementById("startForm").addEventListener("submit", (e)=>{
   e.preventDefault();
+  const email = emailInput.value;
+
+  if (isEmailCompleted(email)){
+    emailError.classList.remove("hidden");
+    emailInput.classList.add("input-error");
+    return;
+  }
+
   studentData = {
     student_name: document.getElementById("student_name").value,
     course: document.getElementById("course").value,
-    student_email: document.getElementById("student_email").value,
+    student_email: email,
     evaluation_date: document.getElementById("evaluation_date").value
   };
   document.getElementById("startScreen").classList.add("hidden");
@@ -272,6 +304,7 @@ async function submitEvaluation(){
     });
     const result = await response.json();
     if (result.success){
+      markEmailCompleted(studentData.student_email);
       document.getElementById("quizScreen").classList.add("hidden");
       document.getElementById("successName").textContent = studentData.student_name;
       document.getElementById("resCorrect").textContent = correct + "/20";
